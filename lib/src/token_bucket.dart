@@ -76,7 +76,7 @@ class AsyncTokenBucket extends _BaseTokenBucket<AsyncTokenBucketStorage> {
   }) : super(storage: storage ?? MemoryTokenBucketStorage());
 
   @override
-  FutureOr<void> _init() {
+  Future<void> _init() {
     return _queueFuture<TokenBucketState>(() => _getSafeFromStorage());
   }
 
