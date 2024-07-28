@@ -6,8 +6,12 @@ import 'package:token_bucket_algorithm/token_bucket_algorithm.dart';
 abstract class AsyncTokenBucketStorage {
   const AsyncTokenBucketStorage();
 
+  /// Gets the current [TokenBucketState] stored by this storage.
+  ///
+  /// Returns [null] if no state is available.
   FutureOr<TokenBucketState?> get();
 
+  /// Overwrites the currently stored [TokenBucketState] of this storage.
   FutureOr<void> set(TokenBucketState state);
 }
 
