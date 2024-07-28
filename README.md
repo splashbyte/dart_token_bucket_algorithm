@@ -5,7 +5,7 @@
 [![likes](https://img.shields.io/pub/likes/token_bucket_algorithm)](https://pub.dev/packages/token_bucket_algorithm/score)
 [![popularity](https://img.shields.io/pub/popularity/token_bucket_algorithm)](https://pub.dev/packages/token_bucket_algorithm/score)
 [![pub points](https://img.shields.io/pub/points/token_bucket_algorithm)](https://pub.dev/packages/token_bucket_algorithm/score)
-[![license](https://img.shields.io/github/license/splashbyte/dart_token_bucket_algorithm.svg)](https://github.com/SplashByte/dart_token_bucket_algorithm/blob/main/LICENSE)
+[![license](https://img.shields.io/github/license/splashbyte/dart_token_bucket_algorithm.svg)](https://github.com/splashbyte/dart_token_bucket_algorithm/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/splashbyte/dart_token_bucket_algorithm/branch/main/graph/badge.svg?token=NY1D6W88H2)](https://codecov.io/gh/splashbyte/dart_token_bucket_algorithm)
 
 This Dart package provides rate limiting by using an implementation of the token bucket algorithm.

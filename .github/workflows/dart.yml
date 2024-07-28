@@ -9,6 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # testing is simpler with Flutter
       - uses: subosito/flutter-action@v2
 
       - name: Install dependencies

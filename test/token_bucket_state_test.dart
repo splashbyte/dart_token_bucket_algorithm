@@ -1,4 +1,5 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/expect.dart';
+import 'package:test/scaffolding.dart';
 import 'package:token_bucket_algorithm/token_bucket_algorithm.dart';
 
 void main() {
