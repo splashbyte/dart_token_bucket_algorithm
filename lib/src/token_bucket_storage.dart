@@ -41,9 +41,9 @@ class MemoryTokenBucketStorage extends TokenBucketStorage {
 
 /// This [TokenBucketStorage] stores a [TokenBucketState] as static variable in memory.
 class StaticMemoryTokenBucketStorage extends TokenBucketStorage {
-  static final Map<String, TokenBucketState> _states = {};
+  static final Map<Object, TokenBucketState> _states = {};
 
-  final String key;
+  final Object key;
 
   StaticMemoryTokenBucketStorage({required this.key});
 
