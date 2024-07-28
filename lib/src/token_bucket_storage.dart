@@ -45,7 +45,7 @@ class StaticMemoryTokenBucketStorage extends TokenBucketStorage {
 
   final Object key;
 
-  StaticMemoryTokenBucketStorage({required this.key});
+  const StaticMemoryTokenBucketStorage({required this.key});
 
   @override
   TokenBucketState? get() => _states[key];

@@ -16,6 +16,6 @@ void main() {
   });
 
   test('StaticMemoryTokenBucketStorage', () {
-    _testStorage(StaticMemoryTokenBucketStorage(key: 'test'));
+    _testStorage(const StaticMemoryTokenBucketStorage(key: 'test'));
   });
 }
