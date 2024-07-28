@@ -8,11 +8,11 @@ void main() {
     storage: MemoryTokenBucketStorage(),
   );
 
-  if(bucket.consume()) {
+  if (bucket.consume()) {
     // Consumed 1 token successfully
   }
 
-  if(bucket.consume(2)) {
+  if (bucket.consume(2)) {
     // Consumed 2 tokens successfully
   }
 }
