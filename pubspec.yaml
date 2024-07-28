@@ -1,6 +1,6 @@
 name: token_bucket_algorithm
-description: "Implementation of the token bucket algorithm."
-version: 0.1.1
+description: "Implementation of the token bucket algorithm for rate limiting e.g. network requests or user actions."
+version: 0.1.2
 repository: https://github.com/splashbyte/dart_token_bucket_algorithm
 issue_tracker: https://github.com/splashbyte/dart_token_bucket_algorithm/issues
 
