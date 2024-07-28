@@ -1,7 +1,6 @@
 # token_bucket_algorithm
 
 [![pub.dev](https://img.shields.io/pub/v/token_bucket_algorithm.svg?style=flat?logo=dart)](https://pub.dev/packages/token_bucket_algorithm)
-[![github](https://img.shields.io/static/v1?label=platform&message=flutter&color=1ebbfd)](https://github.com/splashbyte/dart_token_bucket_algorithm)
 [![likes](https://img.shields.io/pub/likes/token_bucket_algorithm)](https://pub.dev/packages/token_bucket_algorithm/score)
 [![popularity](https://img.shields.io/pub/popularity/token_bucket_algorithm)](https://pub.dev/packages/token_bucket_algorithm/score)
 [![pub points](https://img.shields.io/pub/points/token_bucket_algorithm)](https://pub.dev/packages/token_bucket_algorithm/score)
