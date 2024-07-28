@@ -1,35 +1,51 @@
 import 'dart:async';
 
-import 'package:clock/clock.dart';
 import 'package:token_bucket_algorithm/token_bucket_algorithm.dart';
 
+/// The base class for storing a [TokenBucketState].
+abstract class AsyncTokenBucketStorage {
+  const AsyncTokenBucketStorage();
+
+  FutureOr<TokenBucketState?> get();
+
+  FutureOr<void> set(TokenBucketState state);
+}
+
+/// The base class for storing a [TokenBucketState] synchronously.
 abstract class TokenBucketStorage extends AsyncTokenBucketStorage {
   const TokenBucketStorage();
 
   @override
-  TokenBucketState get();
+  TokenBucketState? get();
 
   @override
   void set(TokenBucketState state);
 }
 
+/// This [TokenBucketStorage] stores a [TokenBucketState] as local variable in memory.
 class MemoryTokenBucketStorage extends TokenBucketStorage {
   MemoryTokenBucketStorage();
 
-  TokenBucketState _state =
-      TokenBucketState(tokens: 0, lastRefillTime: clock.now());
+  TokenBucketState? _state;
 
   @override
-  TokenBucketState get() => _state;
+  TokenBucketState? get() => _state;
 
   @override
   void set(TokenBucketState state) => _state = state;
 }
 
-abstract class AsyncTokenBucketStorage {
-  const AsyncTokenBucketStorage();
+/// This [TokenBucketStorage] stores a [TokenBucketState] as static variable in memory.
+class StaticMemoryTokenBucketStorage extends TokenBucketStorage {
+  static final Map<String, TokenBucketState> _states = {};
 
-  FutureOr<TokenBucketState> get();
+  final String key;
 
-  FutureOr<void> set(TokenBucketState state);
+  StaticMemoryTokenBucketStorage({required this.key});
+
+  @override
+  TokenBucketState? get() => _states[key];
+
+  @override
+  void set(TokenBucketState state) => _states[key] = state;
 }

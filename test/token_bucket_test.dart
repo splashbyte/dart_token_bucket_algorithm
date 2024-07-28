@@ -1,13 +1,56 @@
 import 'package:clock/clock.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:token_bucket_algorithm/token_bucket_algorithm.dart';
 
+import 'mocks.dart';
+
 void main() {
-  test('Bucket is initialized with 0 tokens', () {
-    final bucket = TokenBucket(
+  test('Bucket is respects initialAmount', () {
+    final bucket1 = TokenBucket(
         size: 15, refillInterval: const Duration(seconds: 1), refillAmount: 10);
-    expect(bucket.availableTokens, 0);
+    expect(bucket1.availableTokens, 0);
+
+    final bucket2 = TokenBucket(
+        size: 15,
+        refillInterval: const Duration(seconds: 1),
+        refillAmount: 10,
+        initialAmount: 3);
+    expect(bucket2.availableTokens, 3);
+  });
+
+  test('Bucket stores token initially', () {
+    fakeAsync((async) {
+      final storage = MockTokenBucketStorage();
+      when(() => storage.get()).thenReturn(null);
+      TokenBucket(
+        size: 15,
+        refillInterval: const Duration(seconds: 1),
+        refillAmount: 10,
+        initialAmount: 3,
+        storage: storage,
+      );
+      verify(() => storage.set(
+          TokenBucketState(tokens: 3, lastRefillTime: clock.now()))).called(1);
+    });
+  });
+
+  test('Async bucket stores token initially', () {
+    fakeAsync((async) {
+      final storage = MockTokenBucketStorage();
+      when(() => storage.get()).thenReturn(null);
+      AsyncTokenBucket(
+        size: 15,
+        refillInterval: const Duration(seconds: 1),
+        refillAmount: 10,
+        initialAmount: 3,
+        storage: storage,
+      );
+      async.flushMicrotasks();
+      verify(() => storage.set(
+          TokenBucketState(tokens: 3, lastRefillTime: clock.now()))).called(1);
+    });
   });
 
   test('Consuming invalid amounts', () {
@@ -103,53 +146,5 @@ void main() {
       expectLater(bucket.availableTokens, completion(refillAmount - 3));
       async.elapse(Duration.zero);
     });
-  });
-
-  test('fromJson and toJson', () async {
-    const tokens = 3;
-    final lastRefillTime = DateTime(2000);
-    final state =
-        TokenBucketState(tokens: tokens, lastRefillTime: lastRefillTime);
-
-    expect(
-      state.toJson(),
-      allOf(
-        containsPair('tokens', tokens),
-        containsPair('lastRefillTime', lastRefillTime.microsecondsSinceEpoch),
-        hasLength(2),
-      ),
-    );
-
-    expect(
-      TokenBucketState.fromJson({
-        'tokens': tokens,
-        'lastRefillTime': lastRefillTime.microsecondsSinceEpoch,
-      }),
-      state,
-    );
-  });
-
-  test('hashCode and ==', () async {
-    const tokens = 3;
-    final lastRefillTime = DateTime(2000);
-    final state1 =
-        TokenBucketState(tokens: tokens, lastRefillTime: lastRefillTime);
-    final state2 =
-        TokenBucketState(tokens: tokens, lastRefillTime: lastRefillTime);
-
-    expect(state1, state2);
-    expect(state1.hashCode, state2.hashCode);
-  });
-
-  test('copyWith', () async {
-    const tokens = 3;
-    final lastRefillTime = DateTime(2000);
-    final state =
-        TokenBucketState(tokens: tokens, lastRefillTime: lastRefillTime);
-
-    expect(state.copyWith(tokens: 4),
-        TokenBucketState(tokens: 4, lastRefillTime: lastRefillTime));
-    expect(state.copyWith(lastRefillTime: DateTime(2001)),
-        TokenBucketState(tokens: tokens, lastRefillTime: DateTime(2001)));
   });
 }

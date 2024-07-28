@@ -19,14 +19,23 @@ abstract class _BaseTokenBucket<S extends AsyncTokenBucketStorage> {
   /// The storage for the internal [TokenBucketState].
   final S storage;
 
+  /// The initial amount of tokens.
+  final int initialAmount;
+
   _BaseTokenBucket({
     required this.size,
     required this.refillInterval,
     required this.refillAmount,
     required this.storage,
+    this.initialAmount = 0,
   })  : assert(size > 0),
         assert(refillAmount > 0),
-        assert(refillInterval > Duration.zero);
+        assert(refillInterval > Duration.zero),
+        assert(initialAmount >= 0 && initialAmount <= size) {
+    _init();
+  }
+
+  FutureOr<void> _init();
 
   /// Returns the currently available tokens of this bucket.
   FutureOr<int> get availableTokens;
@@ -62,16 +71,31 @@ class AsyncTokenBucket extends _BaseTokenBucket<AsyncTokenBucketStorage> {
     required super.size,
     required super.refillInterval,
     required super.refillAmount,
+    super.initialAmount,
     AsyncTokenBucketStorage? storage,
   }) : super(storage: storage ?? MemoryTokenBucketStorage());
 
   @override
+  FutureOr<void> _init() {
+    return _queueFuture<TokenBucketState>(() => _getSafeFromStorage());
+  }
+
+  Future<TokenBucketState> _getSafeFromStorage() async {
+    var result = await storage.get();
+    if (result == null) {
+      await storage.set(result =
+          TokenBucketState(tokens: initialAmount, lastRefillTime: clock.now()));
+    }
+    return result;
+  }
+
+  @override
   FutureOr<int> get availableTokens async {
     await _queueFuture(() async {
-      await storage.set(_refillBucket(await storage.get()));
+      await storage.set(_refillBucket(await _getSafeFromStorage()));
       return false;
     });
-    return Future.value(storage.get()).then((state) => state.tokens);
+    return _getSafeFromStorage().then((state) => state.tokens);
   }
 
   @override
@@ -80,7 +104,7 @@ class AsyncTokenBucket extends _BaseTokenBucket<AsyncTokenBucketStorage> {
       throw ArgumentError('cost must be <=$size and >=1');
     }
     return _queueFuture(() async {
-      final state = _refillBucket(await storage.get());
+      final state = _refillBucket(await _getSafeFromStorage());
       final (result, newState) = state.consume(cost);
       await storage.set(newState);
       return result;
@@ -105,13 +129,29 @@ class TokenBucket extends _BaseTokenBucket<TokenBucketStorage> {
     required super.size,
     required super.refillInterval,
     required super.refillAmount,
+    super.initialAmount,
     TokenBucketStorage? storage,
   }) : super(storage: storage ?? MemoryTokenBucketStorage());
 
   @override
+  void _init() {
+    _getSafeFromStorage();
+  }
+
+  TokenBucketState _getSafeFromStorage() {
+    var result = storage.get();
+    if (result == null) {
+      storage.set(result =
+          TokenBucketState(tokens: initialAmount, lastRefillTime: clock.now()));
+    }
+    return result;
+  }
+
+  @override
   int get availableTokens {
-    storage.set(_refillBucket(storage.get()));
-    return storage.get().tokens;
+    final result = _refillBucket(_getSafeFromStorage());
+    storage.set(result);
+    return result.tokens;
   }
 
   @override
@@ -119,7 +159,7 @@ class TokenBucket extends _BaseTokenBucket<TokenBucketStorage> {
     if (cost < 1 || cost > size) {
       throw ArgumentError('cost must be <=$size and >=1');
     }
-    final state = _refillBucket(storage.get());
+    final state = _refillBucket(_getSafeFromStorage());
     final (result, newState) = state.consume(cost);
     storage.set(newState);
     return result;
