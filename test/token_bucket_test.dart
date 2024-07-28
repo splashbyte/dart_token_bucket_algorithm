@@ -54,6 +54,34 @@ void main() {
     });
   });
 
+  test('Bucket respects storage value', () {
+    final storage = MockTokenBucketStorage();
+    final tokenBucketState =
+        TokenBucketState(tokens: 3, lastRefillTime: clock.now());
+    when(() => storage.get()).thenReturn(tokenBucketState);
+    final bucket = TokenBucket(
+      size: 15,
+      refillInterval: const Duration(seconds: 1),
+      refillAmount: 10,
+      storage: storage,
+    );
+    expect(bucket.availableTokens, tokenBucketState.tokens);
+  });
+
+  test('Async bucket respects storage value', () {
+    final storage = MockTokenBucketStorage();
+    final tokenBucketState =
+        TokenBucketState(tokens: 3, lastRefillTime: clock.now());
+    when(() => storage.get()).thenReturn(tokenBucketState);
+    final bucket = AsyncTokenBucket(
+      size: 15,
+      refillInterval: const Duration(seconds: 1),
+      refillAmount: 10,
+      storage: storage,
+    );
+    expect(bucket.availableTokens, completion(tokenBucketState.tokens));
+  });
+
   test('Consuming invalid amounts', () {
     const size = 15;
     const refillAmount = 10;
